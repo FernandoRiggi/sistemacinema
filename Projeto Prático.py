@@ -1,3 +1,35 @@
+##### SUBMENU DE RELÁTORIOS ######
+def submenu_relatorios(RELATORIOS):
+    print("Escolha uma opção entre 1 e 3, ou digite 4 para sair")
+    print("1. Mostrar todos os dados de todas as salas com parâmetros")
+    print("2. Mostrar todos os filmes lançados a partir de ano de lançamento específico")
+    print("3. Mostrar os elementos, a partir de uma data inicial até uma data final")
+    print("4. Sair")
+    op=int(input("Escolha a opção que deseja realizar: "))
+    return op
+####### SUBMENU DE SESSÕES #######
+def submenu_sessoes(SESSOES):
+    print("Escolha uma opção entre 1 e 5, ou digite 6 para sair")
+    print("1. Listar todas as salas")
+    print("2. Listar um elemento específico do conjunto")
+    print("3. Incluir elementos específico do conjunto")
+    print("4. Alterar elementos da sessão")
+    print("5. Excluir um elemento do conjunto das sessões")
+    print("6. Sair")
+    op=int(input("Escolha a opção que deseja realizar: "))
+    return op
+###### SUBMENU DE SALAS #######
+def submenu_salas(SALAS):
+    print("Escolha uma opção entre 1 e 5 ou digite 6 para sair")
+    print("1. Listar todas as salas")
+    print("2. Listar um elemento específico do conjunto")
+    print("3. Incluir elementos específico do conjunto")
+    print("4. Alterar elementos da sala")
+    print("5. Excluir um elemento do conjunto das salas")
+    print("6. Sair")
+    op=int(input("Escolha a opção que deseja realizar: "))
+    return op
+######### FUNÇÃO PARA ADICIONAR O CODIGO DO FILME ########
 def add_codigo(FILMES):
     codigo = input("Digite o código do filme: ")
     if codigo not in FILMES:
@@ -7,6 +39,7 @@ def add_codigo(FILMES):
     else:
         print("O código já existe.")
     return codigo
+######## MENU PARA ADICIONAR ELEMENTOS EM UM FILME#######
 def incluir_elementos_filme(FILMES, codigo): #submenu para adicionar elementos no filme
     print("Escolha os elementos que deseja adicionar")
     print("1. Nome do Filme")
@@ -40,6 +73,7 @@ def incluir_elementos_filme(FILMES, codigo): #submenu para adicionar elementos n
     else:
         print("Operação inválida, escolha uma opção entre 1 e 5.")
     return op
+######## MENU PARA LISTAR ELEMENTOS EM UM FILME########
 def listar_elemento_especifico(FILMES, codigo):
     print("Escolha o elemento que deseja visualizar")
     print("1. Nome do Filme")
@@ -64,6 +98,7 @@ def listar_elemento_especifico(FILMES, codigo):
             print("Operação inválida, escolha uma opção entre 1 e 5.")
     else:
         print("Código do filme não encontrado.")
+####### SUBMENU DE FILMES #######
 def submenu_filmes(FILMES): #submenu de filmes
     print("Escolha uma opção entre 1 à 5 ou digite 6 para sair")
     print("1. Listar todos os filmes")
@@ -74,7 +109,8 @@ def submenu_filmes(FILMES): #submenu de filmes
     print("6. Sair")
     op = int(input("Escolha a opção que deseja realizar: "))
     return op
-def menu(): #função para escolha das subopções
+#########MENU DE SUBOPÇÕES######
+def menu(): 
     print("Escolha uma opção entre 1 à 4 ou digite 5 para sair")
     print("1. Submenu de Salas")
     print("2. Submenu de Filmes")
@@ -86,15 +122,21 @@ def menu(): #função para escolha das subopções
 def main(): #programa principal
     operacao=1
     FILMES={}
+    SALAS={}
+    SESSOES={}
+    RELATORIOS={}
     while operacao !=5:
         operacao = menu() #chama o menu das opções principais
         if operacao == 1: #abrirá o submenu de Salas
+            opsalas = 1
+            while opsalas!=6:
+                opsalas = submenu_salas(SALAS) #chama o submenu de salas
         elif operacao ==2: #abrirá o submenu de Filmes
             opfilmes=1
             while opfilmes !=6:
                 opfilmes = submenu_filmes(FILMES) #chama o submenu de filmes
-                if opfilmes ==1:
-                    print(f"A lista de todos os filmes são: {FILMES}")
+                if opfilmes == 1:
+                    print(f"A lista de filmes são: {FILMES}")
                 elif opfilmes==2:
                     codigo = input("Digite o código do filme para listar os detalhes: ")
                     listar_elemento_especifico(FILMES, codigo)
@@ -123,7 +165,13 @@ def main(): #programa principal
                 else:
                     print("Operação inválida, escolha uma opção entre 1 à 6.")
         elif operacao ==3: #abrirá o submenu de Sessões
+            opsessoes = 1
+            while opsessoes !=6:
+                opsessoes = submenu_sessoes(SESSOES) #chama o submenu de sessoes
         elif operacao == 4: #abrirá o submenu de Relátorios
+            oprelatorios = 1
+            while oprelatorios !=4:
+                oprelatorios = submenu_relatorios(RELATORIOS)
         elif operacao==5: #encerrará o programa
             print("Encerrando programa")
         else: #caso digitado um número que não corresponde as operações válidas
