@@ -120,12 +120,12 @@ def menu():
     op=int(input("Escolha a opção que deseja realizar: "))
     return op
 def main(): #programa principal
-    operacao=1
     FILMES={}
     SALAS={}
     SESSOES={}
     RELATORIOS={}
-    while operacao !=5:
+    Menu = True
+    while Menu:
         operacao = menu() #chama o menu das opções principais
         if operacao == 1: #abrirá o submenu de Salas
             opsalas = 1
@@ -174,6 +174,7 @@ def main(): #programa principal
                 oprelatorios = submenu_relatorios(RELATORIOS)
         elif operacao==5: #encerrará o programa
             print("Encerrando programa")
+            Menu = False
         else: #caso digitado um número que não corresponde as operações válidas
             print("Operação inválida, escolha uma opção entre 1 à 5.")
 main()
