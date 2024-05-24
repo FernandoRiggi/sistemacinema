@@ -1,23 +1,10 @@
-C�digo: F000
-Nome: The Batman
-Diretor: Matt Reeves
-C�digo: F001
-Nome: Joker
-Diretor: Todd Philips
-C�digo: F002
+Codigo: F000
 Nome: Inception
-Diretor: Nollan
-C�digo: F0004
-Nome: Duna pt1
-Diretor: Dennis Villeneuve
-C�digo: F005
-Nome: Duna pat2
-Diretor: Dennis Vileneuve
-C�digo: 000
-Nome: Inception
-C�digo: f0
-Nome: inception
-C�digo: f0
-C�digo: f0
-C�digo: f0
-C�digo: f0
+Ano: 2010
+Diretor: Christopher Nolan
+Atores: Leonardo DiCaprio, Cillian Murphy, Joseph Gordon-Levitt, Tom Hardy, Elliot Page, Marion Cotillard, Ken Watanabe, Michael Caine
+Codigo: F001
+Nome: Esqueceram de Mim
+Ano: 1990
+Diretor: Chris Columbus
+Atores: Macauly Culkin, Joe Pesci, Daniel Stern, Kieran Culkin, Catherine O'Hara, John Heard
