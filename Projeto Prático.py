@@ -19,9 +19,10 @@ def listar_filmes_data(data_filme):
                 filme['Atores'] = linha.split(': ')[1]
         if filme:
             filmes.append(filme)
+        print(f"\nFilmes lançados a partir de {data_filme}")
         for filme in filmes:
             if filme["Ano"]>=data_filme:
-                print("-"*40)
+                print("-"*119)
                 print(f"Código: {filme['Codigo']}")
                 print(f"Título: {filme['Nome']}")
                 print(f"Ano de Lançamento: {filme['Ano']}")
