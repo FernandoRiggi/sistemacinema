@@ -3,8 +3,27 @@ Nome: Inception
 Ano: 2010
 Diretor: Christopher Nolan
 Atores: Leonardo DiCaprio, Cillian Murphy, Joseph Gordon-Levitt, Tom Hardy, Elliot Page, Marion Cotillard, Ken Watanabe, Michael Caine
+
 Codigo: F001
 Nome: Esqueceram de Mim
 Ano: 1990
 Diretor: Chris Columbus
 Atores: Macauly Culkin, Joe Pesci, Daniel Stern, Kieran Culkin, Catherine O'Hara, John Heard
+
+Codigo: F002
+Nome: Batman
+Ano: 1989
+Diretor: Tim Burton
+Atores: Michael Keaton, Jack Nicholson, Kim Basinger, Jack Palance
+
+Codigo: F003
+Nome: Joker
+Ano: 2019
+Diretor: Todd Phillips
+Atores: Joaquin Phoenix, Robert De Niro, Zazie Beetz, Glenn Fleshler, Frances Conroy, Bryan Callen
+
+Codigo: F004
+Nome: The Batman
+Ano: 2022
+Diretor: Matt Reeves
+Atores: Robert Pattinson, Zoe Kravitz, Paul Dano, Colin Farrell, Jeffrey Wright, Andy Serkis

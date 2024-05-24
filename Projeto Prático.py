@@ -1,7 +1,35 @@
-
+######FUNÇÃO LISTAR DADOS DE FILME A PARTIR DE X#######
+def listar_filmes_data(data_filme):
+    with open("filmes.txt", "r", encoding="ISO-8859-1") as file:
+        filmes=[]
+        filme={}
+        for linha in file:
+            linha=linha.strip()
+            if linha.startswith("Codigo:"):
+                if filme:  
+                    filmes.append(filme)
+                filme = {'Codigo': linha.split(': ')[1]}
+            elif linha.startswith("Nome:"):
+                filme['Nome'] = linha.split(': ')[1]
+            elif linha.startswith("Ano:"):
+                filme['Ano'] = int(linha.split(': ')[1])
+            elif linha.startswith("Diretor:"):                    
+                filme['Diretor'] = linha.split(': ')[1]
+            elif linha.startswith("Atores:"):
+                filme['Atores'] = linha.split(': ')[1]
+        if filme:
+            filmes.append(filme)
+        for filme in filmes:
+            if filme["Ano"]>=data_filme:
+                print("-"*40)
+                print(f"Código: {filme['Codigo']}")
+                print(f"Título: {filme['Nome']}")
+                print(f"Ano de Lançamento: {filme['Ano']}")
+                print(f"Diretor: {filme['Diretor']}")
+                print(f"Atores: {filme['Atores']}")
 ##### SUBMENU DE RELÁTORIOS ######
 def submenu_relatorios(RELATORIOS):
-    print("Submenu RELATÓRIOS:")
+    print("\nSubmenu RELATÓRIOS:")
     print("   1. Mostrar todos os dados de todas as salas com parâmetros")
     print("   2. Mostrar todos os filmes lançados a partir de ano de lançamento específico")
     print("   3. Mostrar os elementos, a partir de uma data inicial até uma data final")
@@ -10,7 +38,7 @@ def submenu_relatorios(RELATORIOS):
     return op
 ####### SUBMENU DE SESSÕES #######
 def submenu_sessoes(SESSOES):
-    print("Submenu SESSÕES:")
+    print("\nSubmenu SESSÕES:")
     print("   1. Listar todas as salas")
     print("   2. Listar um elemento específico do conjunto")
     print("   3. Incluir elementos específico do conjunto")
@@ -21,7 +49,7 @@ def submenu_sessoes(SESSOES):
     return op
 ###### SUBMENU DE SALAS #######
 def submenu_salas(SALAS):
-    print("Submenu SALAS:")
+    print("\nSubmenu SALAS:")
     print("   1. Listar todas as salas")
     print("   2. Listar um elemento específico do conjunto")
     print("   3. Incluir elementos específico do conjunto")
@@ -32,16 +60,32 @@ def submenu_salas(SALAS):
     return op
 ######FUNÇÃO PARA REMOVER O FILME #############
 def remove_filme(FILMES, codigo):
-    if codigo in FILMES:  
-        print("Deseja confirmar a remoção do filme?")
-        confirmacao = input("Para confirmar digite o codigo do filme: ")
-        if confirmacao == codigo:
-            del FILMES[codigo]
+    print("Deseja confirmar a remoção do filme?")
+    confirmacao = input("Para confirmar digite o codigo do filme: ")
+    if confirmacao == codigo:
+        filme_encontrado=False
+        with open("filmes.txt", 'r', encoding="ISO-8859-1") as file:
+            linhas=file.readlines()
+            with open("filmes.txt", 'w', encoding="ISO-8859-1") as file:
+                remover_linhas = False
+                for linha in linhas:
+                    if remover_linhas:
+                        if linha.strip() == "":
+                            remover_linhas = False
+                        continue
+                    elif linha.startswith("Codigo:") and linha.strip().split(":")[1].strip() == confirmacao:
+                        filme_encontrado = True
+                        remover_linhas = True
+                    else:
+                        file.write(linha)
+        if filme_encontrado:
             return True
         else:
-            print("Código de confirmação incorreto, retornando ao submenu FILMES")
+            print("Código do filme não encontrado, retornando ao submenu FILMES")
+            return False
     else:
-        print("Código do filme não encontrado, retornando ao submenu FILMES")
+        print("Código de confirmação incorreto, retornando ao submenu FILMES")
+        return False
 ######### FUNÇÃO PARA ADICIONAR O CODIGO DO FILME ########
 def add_codigo(FILMES):
     codigo = input("Digite o código do filme: ")
@@ -88,7 +132,7 @@ def incluir_elementos_filme(FILMES, codigo): #submenu para adicionar elementos n
         atores=input("Digite os atores, (para separar utilize vírgula): ")
         FILMES[codigo]["Atores"]=atores.split(",")
         with open("filmes.txt", "a") as file:
-            file.write(f"Atores: {",".join(atores.split(","))}\n")
+            file.write(f"Atores: {",".join(atores.split(","))}\n\n")
     elif op==5:
         print("Saindo do menu de inclusão de elementos.")
     else:
@@ -236,6 +280,9 @@ def main(): #programa principal
                 oprelatorios = submenu_relatorios(RELATORIOS)
                 if oprelatorios==1:
                     print("Mostrar todos as salas cujo tipo de exibição seja X e capacidade para mais de Y pessoas, onde X e Y são fornecidos pelo usuário;")
+                elif oprelatorios==2:
+                    data_filme=int(input("Digite a data que deseja ver as informações dos filmes lançados a partir dela: "))
+                    listar_filmes_data(data_filme)
                 else:
                     print("Encerrando submenu de relátorios")
                     Menu_relatorios=False
