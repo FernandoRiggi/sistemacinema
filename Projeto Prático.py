@@ -1,33 +1,48 @@
+def gravar_arquivo(FILMES):
+    arq= open('./filmes.txt', 'w')
+    if Existe_Arquivo('./filmes.txt'):
+        for codigo in FILMES:
+            frase = ''
+            frase = codigo +';' + FILMES[codigo]['Nome'] +';' + FILMES[codigo]['Ano']+';'+FILMES[codigo]['Diretor']+';'
+            for ator in FILMES[codigo]['Atores']:
+                frase += ator +'@'
+            arq.write(frase)
+            
+    else:
+        print('Arquivo não existe')
+########FUNÇÃO PARA VER SE EXISTE ALGO NO ARQUIVO###########
+def Existe_Arquivo(nome):
+    import os
+    if os.path.exists(nome):
+        return True
+    else:
+        return False
+#####FUNÇÃO PARA LER OS DADOS DO ARQUIVO FILMES E ADD EM DICT #########
+def ler_filmes(FILMES):
+    if Existe_Arquivo('./filmes.txt'):
+        with open('filmes.txt','r') as file:
+            for linha in file:
+                linha = linha.split(';')
+                codigo = linha[0]
+                FILMES[codigo]={}
+                FILMES[codigo]['Nome']=linha[1]
+                ano=linha[2]
+                FILMES[codigo]['Ano']=int(ano)
+                FILMES[codigo]['Diretor']=linha[3]
+                atores=linha[4].split('@')
+                FILMES[codigo]['Atores']=atores
+        return(FILMES)
+    else:
+        return False
 ######FUNÇÃO LISTAR DADOS DE FILME A PARTIR DE X#######
-def listar_filmes_data(data_filme):
-    with open("filmes.txt", "r", encoding="ISO-8859-1") as file:
-        filmes=[]
-        filme={}
-        for linha in file:
-            linha=linha.strip()
-            if linha.startswith("Codigo:"):
-                if filme:  
-                    filmes.append(filme)
-                filme = {'Codigo': linha.split(': ')[1]}
-            elif linha.startswith("Nome:"):
-                filme['Nome'] = linha.split(': ')[1]
-            elif linha.startswith("Ano:"):
-                filme['Ano'] = int(linha.split(': ')[1])
-            elif linha.startswith("Diretor:"):                    
-                filme['Diretor'] = linha.split(': ')[1]
-            elif linha.startswith("Atores:"):
-                filme['Atores'] = linha.split(': ')[1]
-        if filme:
-            filmes.append(filme)
-        print(f"\nFilmes lançados a partir de {data_filme}")
-        for filme in filmes:
-            if filme["Ano"]>=data_filme:
-                print("-"*119)
-                print(f"Código: {filme['Codigo']}")
-                print(f"Título: {filme['Nome']}")
-                print(f"Ano de Lançamento: {filme['Ano']}")
-                print(f"Diretor: {filme['Diretor']}")
-                print(f"Atores: {filme['Atores']}")
+def listar_filmes_data(FILMES, data_filme):
+    for codigo in FILMES:
+        if FILMES[codigo]['Ano']>= data_filme:
+            print(FILMES[codigo])
+            print(FILMES[codigo]['Nome'])
+            print(FILMES[codigo]['Ano'])
+            print(FILMES[codigo]['Diretor'])
+            print(FILMES[codigo]['Atores'])
 ##### SUBMENU DE RELÁTORIOS ######
 def submenu_relatorios(RELATORIOS):
     print("\nSubmenu RELATÓRIOS:")
@@ -64,22 +79,8 @@ def remove_filme(FILMES, codigo):
     print("Deseja confirmar a remoção do filme?")
     confirmacao = input("Para confirmar digite o codigo do filme: ")
     if confirmacao == codigo:
-        filme_encontrado=False
-        with open("filmes.txt", 'r', encoding="ISO-8859-1") as file:
-            linhas=file.readlines()
-            with open("filmes.txt", 'w', encoding="ISO-8859-1") as file:
-                remover_linhas = False
-                for linha in linhas:
-                    if remover_linhas:
-                        if linha.strip() == "":
-                            remover_linhas = False
-                        continue
-                    elif linha.startswith("Codigo:") and linha.strip().split(":")[1].strip() == confirmacao:
-                        filme_encontrado = True
-                        remover_linhas = True
-                    else:
-                        file.write(linha)
-        if filme_encontrado:
+        if confirmacao in FILMES:
+            del FILMES[codigo]
             return True
         else:
             print("Código do filme não encontrado, retornando ao submenu FILMES")
@@ -91,9 +92,7 @@ def remove_filme(FILMES, codigo):
 def add_codigo(FILMES):
     codigo = input("Digite o código do filme: ")
     if codigo not in FILMES:
-        FILMES[codigo]={}
-        with open("filmes.txt", "a") as file:
-            file.write(f"Codigo: {codigo}\n")
+        FILMES[codigo]={}           
     else:
         print("O código já existe.")
     return codigo
@@ -117,23 +116,15 @@ def incluir_elementos_filme(FILMES, codigo): #submenu para adicionar elementos n
     if op ==1:
         nome = input("Digite o nome do filme: ")
         FILMES[codigo]["Nome"]=nome
-        with open("filmes.txt", "a") as file:
-            file.write(f"Nome: {nome}\n")
     elif op ==2:
         ano=input("Digite o ano de lançamento do filme: ")
         FILMES[codigo]["Ano"]=ano
-        with open("filmes.txt", "a") as file:
-            file.write(f"Ano: {ano}\n")
     elif op==3:
         diretor=input("Digite o nome do diretor: ")
         FILMES[codigo]["Diretor"]=diretor
-        with open("filmes.txt", "a") as file:
-            file.write(f"Diretor: {diretor}\n")
     elif op==4:
         atores=input("Digite os atores, (para separar utilize vírgula): ")
         FILMES[codigo]["Atores"]=atores.split(",")
-        with open("filmes.txt", "a") as file:
-            file.write(f"Atores: {",".join(atores.split(","))}\n\n")
     elif op==5:
         print("Saindo do menu de inclusão de elementos.")
     else:
@@ -149,45 +140,13 @@ def listar_elemento_especifico(FILMES, codigo):
     print("   5. Sair")
     op = int(input("Escolha a opção que deseja realizar: "))
     if op == 1:
-        with open("filmes.txt", "r", encoding="ISO-8859-1") as file:
-            filme_encontrado = False
-            for linha in file:
-                if linha.startswith("Codigo:") and linha.strip().split(":")[1].strip() == codigo:
-                    filme_encontrado = True
-                elif filme_encontrado and linha.strip().startswith("Nome:"):
-                    nome_filme = linha.strip().split(":")[1].strip()
-                    print(f"Nome: {nome_filme}")
-                    break
+        print(f"Nome: {FILMES[codigo['Nome']]}")
     elif op == 2:
-        with open("filmes.txt", "r", encoding="ISO-8859-1") as file:
-            filme_encontrado = False
-            for linha in file:
-                if linha.startswith("Codigo:") and linha.strip().split(":")[1].strip() == codigo:
-                    filme_encontrado = True
-                elif filme_encontrado and linha.strip().startswith("Ano:"):
-                    nome_filme = linha.strip().split(":")[1].strip()
-                    print(f"Nome: {nome_filme}")
-                    break
+        print(f"Ano: {FILMES[codigo]['Ano']}")
     elif op == 3:
-        with open("filmes.txt", "r", encoding="ISO-8859-1") as file:
-            filme_encontrado = False
-            for linha in file:
-                if linha.startswith("Codigo:") and linha.strip().split(":")[1].strip() == codigo:
-                    filme_encontrado = True
-                elif filme_encontrado and linha.strip().startswith("Diretor:"):
-                    nome_filme = linha.strip().split(":")[1].strip()
-                    print(f"Nome: {nome_filme}")
-                    break
+        print(f"Diretor: {FILMES[codigo]['Diretor']}")
     elif op == 4:
-        with open("filmes.txt", "r", encoding="ISO-8859-1") as file:
-            filme_encontrado = False
-            for linha in file:
-                if linha.startswith("Codigo:") and linha.strip().split(":")[1].strip() == codigo:
-                    filme_encontrado = True
-                elif filme_encontrado and linha.strip().startswith("Atores:"):
-                    nome_filme = linha.strip().split(":")[1].strip()
-                    print(f"Nome: {nome_filme}")
-                    break
+        print(f"Atores: {', '.join(FILMES[codigo]['Atores'])}")
     elif op == 5:
         print("Saindo do menu de listagem de elementos.")
     else:
@@ -219,6 +178,7 @@ def main(): #programa principal
     SESSOES={}
     RELATORIOS={}
     Menu = True
+    ler_filmes(FILMES)
     while Menu:
         operacao = menu() #chama o menu das opções principais
         if operacao == 1: #abrirá o submenu de Salas
@@ -261,6 +221,7 @@ def main(): #programa principal
                         print(f"O filme {codigo} foi excluido")
                 elif opfilmes==6:
                     print("Encerrando submenu de filmes.")
+                    gravar_arquivo(FILMES)
                     Menu_filmes=False
                 else:
                     print("Operação inválida, escolha uma opção entre 1 à 6.")
@@ -283,7 +244,7 @@ def main(): #programa principal
                     print("Mostrar todos as salas cujo tipo de exibição seja X e capacidade para mais de Y pessoas, onde X e Y são fornecidos pelo usuário;")
                 elif oprelatorios==2:
                     data_filme=int(input("Digite a data que deseja ver as informações dos filmes lançados a partir dela: "))
-                    listar_filmes_data(data_filme)
+                    listar_filmes_data(FILMES, data_filme)
                 else:
                     print("Encerrando submenu de relátorios")
                     Menu_relatorios=False
