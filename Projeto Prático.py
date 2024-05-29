@@ -3,9 +3,10 @@ def gravar_arquivo(FILMES):
     if Existe_Arquivo('./filmes.txt'):
         for codigo in FILMES:
             frase = ''
-            frase = codigo +';' + FILMES[codigo]['Nome'] +';' + FILMES[codigo]['Ano']+';'+FILMES[codigo]['Diretor']+';'
+            frase = codigo +';' + FILMES[codigo]['Nome'] +';' + str(FILMES[codigo]['Ano'])+';'+FILMES[codigo]['Diretor']+';'
             for ator in FILMES[codigo]['Atores']:
                 frase += ator +'@'
+            frase+= "\n"
             arq.write(frase)
             
     else:
@@ -29,20 +30,22 @@ def ler_filmes(FILMES):
                 ano=linha[2]
                 FILMES[codigo]['Ano']=int(ano)
                 FILMES[codigo]['Diretor']=linha[3]
-                atores=linha[4].split('@')
+                atores=linha[4].strip().split('@')[:-1]
                 FILMES[codigo]['Atores']=atores
         return(FILMES)
     else:
         return False
 ######FUNÇÃO LISTAR DADOS DE FILME A PARTIR DE X#######
 def listar_filmes_data(FILMES, data_filme):
+    print(f"Filmes lançados a partir de {data_filme}:")
     for codigo in FILMES:
-        if FILMES[codigo]['Ano']>= data_filme:
-            print(FILMES[codigo])
-            print(FILMES[codigo]['Nome'])
-            print(FILMES[codigo]['Ano'])
-            print(FILMES[codigo]['Diretor'])
-            print(FILMES[codigo]['Atores'])
+        if int(FILMES[codigo]['Ano'])>= data_filme:
+            print("\n")
+            print("Código:",codigo)
+            print("Título:",FILMES[codigo]['Nome'])
+            print("Ano de lançamento:",FILMES[codigo]['Ano'])
+            print("Diretor:",FILMES[codigo]['Diretor'])
+            print("Atores:",", ".join(FILMES[codigo]['Atores']))
 ##### SUBMENU DE RELÁTORIOS ######
 def submenu_relatorios(RELATORIOS):
     print("\nSubmenu RELATÓRIOS:")
@@ -97,13 +100,10 @@ def add_codigo(FILMES):
         print("O código já existe.")
     return codigo
 #####FUNÇÃO PARA LISTAR OS FILMES#####
-def listar_filmes():
+def listar_filmes(FILMES):
     print("Lista de filmes no sistema:")
-    with open("filmes.txt", "r") as file:
-        for linha in file:
-            if linha.startswith("Nome:"):
-                nome_filme=linha.strip().split(":")[1]
-                print(nome_filme, end=", ")
+    for codigo in FILMES:
+        print(FILMES[codigo]['Nome'])
 ######## MENU PARA ADICIONAR ELEMENTOS EM UM FILME#######
 def incluir_elementos_filme(FILMES, codigo): #submenu para adicionar elementos no filme
     print("Escolha os elementos que deseja adicionar")
@@ -140,7 +140,7 @@ def listar_elemento_especifico(FILMES, codigo):
     print("   5. Sair")
     op = int(input("Escolha a opção que deseja realizar: "))
     if op == 1:
-        print(f"Nome: {FILMES[codigo['Nome']]}")
+        print(f"Nome: {FILMES[codigo]['Nome']}")
     elif op == 2:
         print(f"Ano: {FILMES[codigo]['Ano']}")
     elif op == 3:
@@ -197,9 +197,10 @@ def main(): #programa principal
             while Menu_filmes == True:
                 opfilmes = submenu_filmes(FILMES) #chama o submenu de filmes
                 if opfilmes == 1:
-                    listar_filmes()
+                    listar_filmes(FILMES)
                 elif opfilmes==2:
                     codigo = input("Digite o código do filme para listar os detalhes: ")
+                    ler_filmes(FILMES)
                     listar_elemento_especifico(FILMES, codigo)
                 elif opfilmes==3:
                     codigo = add_codigo(FILMES)
