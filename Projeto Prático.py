@@ -1,4 +1,104 @@
-def gravar_arquivo(FILMES):
+####FUNÇÃO PARA REMOVER SALA####
+def remove_sala(SALAS, codigo):
+    print("Deseja confirmar a remoção da sala?")
+    confirmacao = input("Para confirmar digite o codigo do sala: ")
+    if confirmacao == codigo:
+        if confirmacao in SALAS:
+            del SALAS[codigo]
+            return True
+        else:
+            print("Código do filme não encontrado, retornando ao submenu SALAS")
+            return False
+    else:
+        print("Código de confirmação incorreto, retornando ao submenu SALAS")
+        return False
+####FUNÇÃO PARA ADD O CODIGO DA SALA####
+def add_codigo_salas(SALAS):
+    codigo = input("Digite o código da sala: ")
+    if codigo not in SALAS:
+        SALAS[codigo]={}
+    else:
+        print("O código já existe.")
+    return codigo
+####FUNÇÃO PARA INCLUIR ELEMENTO EM SALAS####
+def incluir_elementos_sala(SALAS, codigo): 
+    print("Escolha os elementos que deseja adicionar")
+    print("1. Nome da Sala")
+    print("2. Capacidade da Sala")
+    print("3. Tipo de Exibição da Sala")
+    print("4. Acessível")
+    print("5. Sair")
+    op=int(input("Escolha a opção que deseja realizar: "))
+    if op ==1:
+        nome = input("Digite o nome da sala: ")
+        SALAS[codigo]["Nome"]=nome
+    elif op ==2:
+        capacidade=input("Digite a capacidade da sala: ")
+        SALAS[codigo]["Capacidade"]=capacidade
+    elif op==3:
+        exibicao=input("Digite o tipo de exibição da sala: ")
+        SALAS[codigo]["Exibicao"]=exibicao
+    elif op==4:
+        acessivel=input("Digite se a sala está acessível: ")
+        SALAS[codigo]["Acessivel"]=acessivel
+    elif op==5:
+        print("Saindo do menu de inclusão de elementos.")
+    else:
+        print("Operação inválida, escolha uma opção entre 1 e 5.")
+    return op
+####FUNÇÃO PARA LISTAR ELEMENTO ESPECIFICO SALAS####
+def listar_elemento_especifico_salas(SALAS, codigo):
+    print("Escolha o elemento que deseja visualizar")
+    print("   1. Nome da Sala")
+    print("   2. Capacidade da Sala")
+    print("   3. Tipo de Exibição")
+    print("   4. Acessível")
+    print("   5. Sair")
+    op = int(input("Escolha a opção que deseja realizar: "))
+    if op == 1:
+        print(f"Nome: {SALAS[codigo]['Nome']}")
+    elif op == 2:
+        print(f"Ano: {SALAS[codigo]['Capacidade']}")
+    elif op == 3:
+        print(f"Diretor: {SALAS[codigo]['Exibicao']}")
+    elif op == 4:
+        print(f"Atores: {SALAS[codigo]['Acessivel']}")
+    elif op == 5:
+        print("Saindo do menu de listagem de elementos.")
+    else:
+        print("Operação inválida, escolha uma opção entre 1 e 5.")
+####FUNÇÃO PARA LISTAR SALAS####
+def listar_salas(SALAS):
+    print("Lista de salas no sistema:")
+    for codigo in SALAS:
+        print(SALAS[codigo]['Nome'])
+####FUNÇÃO PARA GRAVAR SALAS EM ARQUIVOS####
+def gravar_sala(SALAS):
+    arq=open('./salas.txt', 'w')
+    if Existe_Arquivo('./salas.txt'):
+        for codigo in SALAS:
+            frase=''
+            frase = codigo +';' + SALAS[codigo]['Nome'] +';' + str(SALAS[codigo]['Capacidade'])+';'+SALAS[codigo]['Exibicao']+';' +SALAS[codigo]['Acessivel']
+            frase+='\n'
+            arq.write(frase)
+####FUNÇÃO PARA LER OS DADOS DO ARQUIVO SALAS E ADD EM DICT####
+def ler_salas(SALAS):
+    if Existe_Arquivo('./salas.txt'):
+        with open('salas.txt', 'r') as file:
+            for linha in file:
+                linha = linha.split(';')
+                codigo = linha[0]
+                SALAS[codigo]={}
+                SALAS[codigo]['Nome']=linha[1]
+                capacidade = linha[2]
+                SALAS[codigo]['Capacidade']=int(capacidade)
+                SALAS[codigo]['Exibicao']=linha[3]
+                SALAS[codigo]['Acessivel']=linha[4]
+            return(SALAS)
+    else:
+        return False
+####FUNÇÃO PARA GRAVAR FILMES EM ARQUIVOS####
+def gravar_filme(FILMES):
     arq= open('./filmes.txt', 'w')
     if Existe_Arquivo('./filmes.txt'):
         for codigo in FILMES:
@@ -92,7 +192,7 @@ def remove_filme(FILMES, codigo):
         print("Código de confirmação incorreto, retornando ao submenu FILMES")
         return False
 ######### FUNÇÃO PARA ADICIONAR O CODIGO DO FILME ########
-def add_codigo(FILMES):
+def add_codigo_filmes(FILMES):
     codigo = input("Digite o código do filme: ")
     if codigo not in FILMES:
         FILMES[codigo]={}           
@@ -131,7 +231,7 @@ def incluir_elementos_filme(FILMES, codigo): #submenu para adicionar elementos n
         print("Operação inválida, escolha uma opção entre 1 e 5.")
     return op
 ######## MENU PARA LISTAR ELEMENTOS EM UM FILME########
-def listar_elemento_especifico(FILMES, codigo):
+def listar_elemento_especifico_filme(FILMES, codigo):
     print("Escolha o elemento que deseja visualizar")
     print("   1. Nome do Filme")
     print("   2. Ano de lançamento do Filme")
@@ -187,10 +287,35 @@ def main(): #programa principal
             while Menu_salas == True:
                 opsalas = submenu_salas(SALAS) #chama o submenu de salas
                 if opsalas==1:
-                    print(f"A lista de salas são: {SALAS}")
+                    listar_salas(SALAS)
+                elif opsalas==2:
+                    codigo = input("Digite o código da sala para listar os detalhes: ")
+                    ler_salas(SALAS)
+                    listar_elemento_especifico_salas(SALAS, codigo)
+                elif opsalas==3:
+                    codigo = add_codigo_salas(SALAS)
+                    incluir_elementos_sala_op=1
+                    while incluir_elementos_sala_op!=5:
+                        incluir_elementos_sala_op=incluir_elementos_sala(SALAS, codigo)
+                elif opsalas==4:
+                    codigo=input("Digite o código da sala que deseja alterar: ")
+                    if codigo in SALAS:
+                        incluir_elementos_sala_op=1
+                        while incluir_elementos_sala_op!=5:
+                            incluir_elementos_sala_op=incluir_elementos_sala(SALAS, codigo)
+                    else:
+                        print("Código não encontrado")
+                elif opsalas==5:
+                    codigo = input("Digite o código da sala que deseja remover: ")
+                    remover=remove_sala(SALAS, codigo)
+                    if remover == True:
+                        print(f"A sala {codigo} foi removido")
                 elif opsalas ==6:
                     print("Encerrando submenu de salas")
+                    gravar_sala(SALAS)
                     Menu_salas = False
+                else:
+                    print("Operação inválida, escolha uma opção entre 1 à 6.")
         elif operacao ==2: #abrirá o submenu de Filmes
             opfilmes=1
             Menu_filmes = True
@@ -201,9 +326,9 @@ def main(): #programa principal
                 elif opfilmes==2:
                     codigo = input("Digite o código do filme para listar os detalhes: ")
                     ler_filmes(FILMES)
-                    listar_elemento_especifico(FILMES, codigo)
+                    listar_elemento_especifico_filme(FILMES, codigo)
                 elif opfilmes==3:
-                    codigo = add_codigo(FILMES)
+                    codigo = add_codigo_filmes(FILMES)
                     incluir_elementos_filme_op=1
                     while incluir_elementos_filme_op !=5:
                         incluir_elementos_filme_op = incluir_elementos_filme(FILMES, codigo)
@@ -222,7 +347,7 @@ def main(): #programa principal
                         print(f"O filme {codigo} foi excluido")
                 elif opfilmes==6:
                     print("Encerrando submenu de filmes.")
-                    gravar_arquivo(FILMES)
+                    gravar_filme(FILMES)
                     Menu_filmes=False
                 else:
                     print("Operação inválida, escolha uma opção entre 1 à 6.")
