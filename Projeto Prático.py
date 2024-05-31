@@ -1,3 +1,14 @@
+####FUNÇÃO LISTAR DADOS DE SALA A PARTIR DE X E Y####
+def listar_salas_cap_exib(SALAS,tipo_de_exibicao,capacidade):
+    print(f"Salas cujas exibição é {tipo_de_exibicao} e capacidade é {capacidade}:")
+    for codigo in SALAS:
+        if int(SALAS[codigo]['Capacidade'])==capacidade and SALAS[codigo]['Exibicao']==tipo_de_exibicao:
+            print('\n')
+            print(f"Código: {codigo}")
+            print(f"Nome: {SALAS[codigo]['Nome']}")
+            print(f"Capacidade: {SALAS[codigo]['Capacidade']}") 
+            print(f"Tipo de Exibição: {SALAS[codigo]['Exibicao']}")
+            print(f"Acessível: {SALAS[codigo]['Acessivel']}")
 ####FUNÇÃO PARA REMOVER SALA####
 def remove_sala(SALAS, codigo):
     print("Deseja confirmar a remoção da sala?")
@@ -367,7 +378,9 @@ def main(): #programa principal
             while Menu_relatorios==True:
                 oprelatorios = submenu_relatorios(RELATORIOS)
                 if oprelatorios==1:
-                    print("Mostrar todos as salas cujo tipo de exibição seja X e capacidade para mais de Y pessoas, onde X e Y são fornecidos pelo usuário;")
+                    tipo_de_exibicao=input("Digite o tipo de exibição que deseja ver as informações da sala: ")
+                    capacidade=int(input("Digite a capacidade da sala que deseja ver as informações: "))
+                    listar_salas_cap_exib(SALAS,tipo_de_exibicao,capacidade)
                 elif oprelatorios==2:
                     data_filme=int(input("Digite a data que deseja ver as informações dos filmes lançados a partir dela: "))
                     listar_filmes_data(FILMES, data_filme)
