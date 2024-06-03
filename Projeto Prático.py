@@ -1,14 +1,15 @@
 ####FUNÇÃO LISTAR DADOS DE SALA A PARTIR DE X E Y####
 def listar_salas_cap_exib(SALAS,tipo_de_exibicao,capacidade):
-    print(f"Salas cujas exibição é {tipo_de_exibicao} e capacidade é {capacidade}:")
+    arq=open('./relatórios.txt', 'w')
+    arq.write('**************************Relatório de Salas**************************\n\n')
+    arq.write(f"Salas com exibição {tipo_de_exibicao} e capacidade {capacidade}")
     for codigo in SALAS:
         if int(SALAS[codigo]['Capacidade'])==capacidade and SALAS[codigo]['Exibicao']==tipo_de_exibicao:
-            print('\n')
-            print(f"Código: {codigo}")
-            print(f"Nome: {SALAS[codigo]['Nome']}")
-            print(f"Capacidade: {SALAS[codigo]['Capacidade']}") 
-            print(f"Tipo de Exibição: {SALAS[codigo]['Exibicao']}")
-            print(f"Acessível: {SALAS[codigo]['Acessivel']}")
+            arq.write((f"Código: {codigo}\n"))
+            arq.write((f"Nome: {SALAS[codigo]['Nome']}\n"))
+            arq.write((f"Capacidade: {SALAS[codigo]['Capacidade']}\n")) 
+            arq.write((f"Tipo de Exibição: {SALAS[codigo]['Exibicao']}\n"))
+            arq.write((f"Acessível: {SALAS[codigo]['Acessivel']}\n"))
 ####FUNÇÃO PARA REMOVER SALA####
 def remove_sala(SALAS, codigo):
     print("Deseja confirmar a remoção da sala?")
@@ -148,15 +149,16 @@ def ler_filmes(FILMES):
         return False
 ######FUNÇÃO LISTAR DADOS DE FILME A PARTIR DE X#######
 def listar_filmes_data(FILMES, data_filme):
-    print(f"Filmes lançados a partir de {data_filme}:")
+    arq=open('./relatórios.txt', 'w')
+    arq.write('**************************Relatório de Filmes**************************\n\n')
+    arq.write((f"Filmes lançados a partir de {data_filme}:"))
     for codigo in FILMES:
         if int(FILMES[codigo]['Ano'])>= data_filme:
-            print("\n")
-            print("Código:",codigo)
-            print("Título:",FILMES[codigo]['Nome'])
-            print("Ano de lançamento:",FILMES[codigo]['Ano'])
-            print("Diretor:",FILMES[codigo]['Diretor'])
-            print("Atores:",", ".join(FILMES[codigo]['Atores']))
+            arq.write((f"Código:",codigo))
+            arq.write((f"Título:",FILMES[codigo]['Nome']))
+            arq.write((f"Ano de lançamento:",FILMES[codigo]['Ano']))
+            arq.write((f"Diretor:",FILMES[codigo]['Diretor']))
+            arq.write((f"Atores:",", ".join(FILMES[codigo]['Atores'])))
 ##### SUBMENU DE RELÁTORIOS ######
 def submenu_relatorios(RELATORIOS):
     print("\nSubmenu RELATÓRIOS:")
