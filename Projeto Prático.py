@@ -1,3 +1,43 @@
+import datetime
+####ADD CODIGO SESSÃO######
+def add_codigo_sessão(SESSOES,codigo):
+    if codigo not in SESSOES:
+        SESSOES[codigo] = {}
+    else:
+        return False
+#####FUNÇÃO INCLUIR PREÇO#######
+def add_preço(SESSOES,codigo):
+    preco = float(input('Entre com o valor da sessão: '))
+    if codigo in SESSOES:
+        SESSOES[codigo]['Preço']=preco
+        return True
+    else:
+        return False
+######FUNÇÃO DEL SESSÃO#####
+def excluir_sessão(SESSOES,codigo):
+    print("Deseja confirmar a remoção da sessão?")
+    confirmacao = input("Para confirmar digite o codigo da sessão: ")
+    if confirmacao == codigo:
+        if confirmacao in SESSOES:
+            del SESSOES[codigo]
+            return True
+        else:
+            print("Código do filme não encontrado, retornando ao submenu SESSÕES")
+            return False
+    else:
+        print("Código de confirmação incorreto, retornando ao submenu SESSÕES")
+        return False
+####FUNÇÃO PARA CRIAR TUPLA####
+def GerarSessão(FILMES,SALAS,SESSOES,codigo):
+    codigo_filme=input("Digite o código do Filme: ")
+    codigo_sala=input("Digite o código da Sala: ")
+    data = datetime.date(input('Entre com a data da sessão na formatação AAAA,MM,DD: '))
+    horario = datetime.time(input('Digite o horario da sessão na formatação HH,MM: '))
+    if codigo not in SESSOES and codigo_filme in FILMES and codigo_sala in SALAS:
+        codigo=(FILMES[codigo_filme]['Codigo'], SALAS[codigo_sala]['Codigo'],data,horario)
+        return True    
+    else:
+        return False
 ####FUNÇÃO LISTAR DADOS DE SALA A PARTIR DE X E Y####
 def listar_salas_cap_exib(SALAS,tipo_de_exibicao,capacidade):
     arq=open('./relatórios.txt', 'w')
@@ -101,6 +141,7 @@ def ler_salas(SALAS):
                 linha = linha.split(';')
                 codigo = linha[0]
                 SALAS[codigo]={}
+                SALAS[codigo]['Codigo']=codigo
                 SALAS[codigo]['Nome']=linha[1]
                 capacidade = linha[2]
                 SALAS[codigo]['Capacidade']=int(capacidade)
@@ -138,6 +179,7 @@ def ler_filmes(FILMES):
                 linha = linha.split(';')
                 codigo = linha[0]
                 FILMES[codigo]={}
+                FILMES[codigo]['Codigo'] = codigo
                 FILMES[codigo]['Nome']=linha[1]
                 ano=linha[2]
                 FILMES[codigo]['Ano']=int(ano)
@@ -171,7 +213,7 @@ def submenu_relatorios(RELATORIOS):
 ####### SUBMENU DE SESSÕES #######
 def submenu_sessoes(SESSOES):
     print("\nSubmenu SESSÕES:")
-    print("   1. Listar todas as salas")
+    print("   1. Listar todas as sessões")
     print("   2. Listar um elemento específico do conjunto")
     print("   3. Incluir elementos específico do conjunto")
     print("   4. Alterar elementos da sessão")
@@ -179,6 +221,10 @@ def submenu_sessoes(SESSOES):
     print("   6. Sair")
     op=int(input("Escolha a opção que deseja realizar: "))
     return op
+def listar_sessoes(Sessões):
+    print('Lista de sessões no sistema: ')
+    for codigo in Sessões.keys():
+        print(Sessões[codigo]) 
 ###### SUBMENU DE SALAS #######
 def submenu_salas(SALAS):
     print("\nSubmenu SALAS:")
@@ -370,7 +416,33 @@ def main(): #programa principal
             while Menu_sessoes ==True:
                 opsessoes = submenu_sessoes(SESSOES) #chama o submenu de sessoes
                 if opsessoes == 1:
-                    print(f"A lista de todas as Sessões são: {SESSOES}")
+                    listar_sessoes(SESSOES)
+                elif opsessoes == 2:
+                    print(f'')
+                elif opsessoes == 3:
+                    codigo = add_codigo_sessão(SESSOES)
+                    bool = GerarSessão(FILMES,SALAS,SESSOES,codigo)
+                    if bool == True:
+                        print('Sessão adicionada com sucesso!')
+                    else:
+                        print('Não foi possivel gerar sessão!')
+                    preco=add_preço(SESSOES,codigo)
+                    if preco==True:
+                        print("Preço adicionado")
+                    else:
+                        print("Não foi possível adicionar o preço")
+                elif opsessoes == 4:
+                    codigo = input('Digite o codigo da sessão que deseja alterar: ')
+                    preco = add_preço(SESSOES,codigo)
+                    if preco == True:
+                        print('Preço alterado!')
+                    else:
+                        print('Não foi possivel alterar o preço!')
+                elif opsessoes == 5:
+                    codigo = input('Entre com o codigo da sessão que deseja excluir: ')
+                    remover = excluir_sessão(SESSOES,codigo)
+                    if remover == True:
+                        print(f'A sessão {codigo} foi excluida!')
                 elif opsessoes==6:
                     print("Encerrando submenu de sessões.")
                     Menu_sessoes=False
