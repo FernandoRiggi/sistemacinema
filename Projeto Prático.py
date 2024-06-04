@@ -3,11 +3,8 @@ import datetime
 def obter_data():
     while True:
         data_str = input("Digite a data no formato AAAA-MM-DD: ")
-        try:
-            data = datetime.datetime.strptime(data_str, "%Y-%m-%d")
-            return data
-        except ValueError:
-            print("Formato de data inválido. Insira no formato AAAA-MM-DD.")
+        data = datetime.datetime.strptime(data_str, "%Y-%m-%d")
+        return data
 ####RELATORIO 3####
 def listar_dados_sessões_data(SESSOES, FILMES, SALAS, data_inicio, data_fim):
     with open('./relatorios.txt', 'w') as arq:
