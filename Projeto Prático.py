@@ -247,7 +247,6 @@ def listar_filmes_data(FILMES, data_filme):
             arq.write((f"Atores:",", ".join(FILMES[codigo]['Atores'])))
 ##### SUBMENU DE RELÁTORIOS ######
 def submenu_relatorios():
-def submenu_relatorios():
     print("\nSubmenu RELATÓRIOS:")
     print("   1. Mostrar todos os dados de todas as salas com parâmetros")
     print("   2. Mostrar todos os filmes lançados a partir de ano de lançamento específico")
@@ -256,7 +255,6 @@ def submenu_relatorios():
     op=int(input("Escolha a opção que deseja realizar: "))
     return op
 ####### SUBMENU DE SESSÕES #######
-def submenu_sessoes():
 def submenu_sessoes():
     print("\nSubmenu SESSÕES:")
     print("   1. Listar todas as sessões")
@@ -305,7 +303,6 @@ def listar_sessoes(Sessões):
     for codigo in Sessões.keys():
         print(Sessões[codigo]) 
 ###### SUBMENU DE SALAS #######
-def submenu_salas():
 def submenu_salas():
     print("\nSubmenu SALAS:")
     print("   1. Listar todas as salas")
@@ -392,7 +389,6 @@ def listar_elemento_especifico_filme(FILMES, codigo):
     else:
         print("Operação inválida, escolha uma opção entre 1 e 5.")
 ####### SUBMENU DE FILMES #######
-def submenu_filmes(): #submenu de filmes
 def submenu_filmes(): #submenu de filmes
     print("\nSubmenu FILMES:")
     print("   1. Listar todos os filmes")
