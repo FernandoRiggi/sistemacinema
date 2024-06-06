@@ -1,4 +1,36 @@
 import datetime
+####gravar_sessoes####
+def gravar_sessoes(SESSOES):
+    arq=open('./sessoes.txt', 'w')
+    if Existe_Arquivo('./sessoes.txt'):
+        for codigo in SESSOES:
+            frase=''
+            frase=codigo+';'+SESSOES[codigo]['Chave'][0]+';'+SESSOES[codigo]['Chave'][1]+';'+str(SESSOES[codigo]['Chave'][2])+';'+str(SESSOES[codigo]['Chave'][3])+';'+str(SESSOES[codigo]['Preço'])
+            frase+='\n'
+            arq.write(frase)
+    else:
+        print("Não existe arquivo")
+####ler_sessoes####
+def ler_sessoes(SESSOES):
+    if Existe_Arquivo('./sessoes.txt'):
+        with open('sessoes.txt') as file:
+            for linha in file:
+                linha = linha.split(';')
+                codigo=linha[0]
+                SESSOES[codigo]={}
+                SESSOES[codigo]['Codigo']=codigo
+                codigo_filme=linha[1]
+                codigo_sala=linha[2]
+                datastr=linha[3]
+                data_obj=datetime.datetime.strptime(datastr, "%Y-%m-%d")
+                horariostr=linha[4]
+                horario_obj = datetime.datetime.strptime(horariostr, "%H:%M:%S")
+                tupla=(codigo_filme,codigo_sala,data_obj,horario_obj)
+                SESSOES[codigo]['Chave']=tupla
+                SESSOES[codigo]['Preço']=float(linha[5])
+            return SESSOES
+    else:
+        return False 
 ####obter_data_rel_3####
 def obter_data():
     while True:
@@ -7,7 +39,7 @@ def obter_data():
         return data
 ####RELATORIO 3####
 def listar_dados_sessões_data(SESSOES, FILMES, SALAS, data_inicio, data_fim):
-    with open('./relatorios.txt', 'w') as arq:
+    with open('./relatórios3.txt', 'w') as arq:
         arq.write('**************************Relatório de Sessões**************************\n\n')
         arq.write(f"Sessões exibidas a partir de {data_inicio.strftime('%Y-%m-%d')} até {data_fim.strftime('%Y-%m-%d')}\n\n")
         # Converter data_inicio para datetime.datetime
@@ -72,12 +104,9 @@ def GerarSessão(FILMES,SALAS,SESSOES,codigo):
         return False
 ####FUNÇÃO LISTAR DADOS DE SALA A PARTIR DE X E Y####
 def listar_salas_cap_exib(SALAS,tipo_de_exibicao,capacidade):
-    arq=open('./relatórios.txt', 'w')
+    arq=open('./relatórios1.txt', 'w')
     arq.write('**************************Relatório de Salas**************************\n\n')
-    arq.write(f"Salas com exibição {tipo_de_exibicao} e capacidade {capacidade}")
-    arq=open('./relatórios.txt', 'w')
-    arq.write('**************************Relatório de Salas**************************\n\n')
-    arq.write(f"Salas com exibição {tipo_de_exibicao} e capacidade {capacidade}")
+    arq.write(f"Salas com exibição {tipo_de_exibicao} e capacidade {capacidade}\n\n")
     for codigo in SALAS:
         if int(SALAS[codigo]['Capacidade'])==capacidade and SALAS[codigo]['Exibicao']==tipo_de_exibicao:
             arq.write((f"Código: {codigo}\n"))
@@ -215,7 +244,6 @@ def ler_filmes(FILMES):
                 codigo = linha[0]
                 FILMES[codigo]={}
                 FILMES[codigo]['Codigo'] = codigo
-                FILMES[codigo]['Codigo'] = codigo
                 FILMES[codigo]['Nome']=linha[1]
                 ano=linha[2]
                 FILMES[codigo]['Ano']=int(ano)
@@ -227,7 +255,7 @@ def ler_filmes(FILMES):
         return False
 ######FUNÇÃO LISTAR DADOS DE FILME A PARTIR DE X#######
 def listar_filmes_data(FILMES, data_filme):
-    with open('./relatorios.txt', 'w') as arq:
+    with open('./relatórios2.txt', 'w') as arq:
         arq.write('**************************Relatório de Filmes**************************\n\n')
         arq.write(f"Filmes lançados a partir de {data_filme}:\n\n")
         
@@ -402,12 +430,13 @@ def menu():
     op=int(input("Escolha a opção que deseja realizar: "))
     return op
 def main(): #programa principal
-    FILMES={'F000': {'Codigo': 'F000', 'Nome': 'HomemAranha', 'Ano': '2019', 'Diretor': 'Fernando', 'Atores': ['Tom Holland', 'Zendaya']}}
-    SALAS={'S000': {'Codigo': 'S000','Nome': 'FernandoCine', 'Capacidade': '69', 'Exibicao': 'Sexo2', 'Acessivel': 'Sim'}}
+    FILMES={}
+    SALAS={}
     SESSOES={}
-    RELATORIOS={}
     Menu = True
     ler_filmes(FILMES)
+    ler_salas(SALAS)
+    ler_sessoes(SESSOES)
     while Menu:
         operacao = menu() #chama o menu das opções principais
         if operacao == 1: #abrirá o submenu de Salas
@@ -520,7 +549,7 @@ def main(): #programa principal
                 elif opsessoes==6:
                     print("Encerrando submenu de sessões.")
                     Menu_sessoes=False
-                    print(SESSOES)
+                    gravar_sessoes(SESSOES)
         elif operacao == 4: #abrirá o submenu de Relátorios
             oprelatorios = 1
             Menu_relatorios = True
@@ -544,7 +573,6 @@ def main(): #programa principal
         elif operacao==5: #encerrará o programa
             print("Encerrando programa")
             Menu = False
-            print(FILMES)
         else: #caso digitado um número que não corresponde as operações válidas
             print("Operação inválida, escolha uma opção entre 1 à 5.")
 main()
