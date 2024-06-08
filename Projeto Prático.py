@@ -89,18 +89,18 @@ def excluir_sessão(SESSOES,codigo):
         print("Código de confirmação incorreto, retornando ao submenu SESSÕES")
         return False
 ####FUNÇÃO PARA CRIAR TUPLA####
-def GerarSessão(FILMES,SALAS,SESSOES,codigo):
+def GerarSessão(FILMES,SALAS,SESSOES,codigo_sessao):
     codigo_filme=input("Digite o código do Filme: ")
     codigo_sala=input("Digite o código da Sala: ")
     data_input = input('Entre com a data da sessão na formatação (AAAA/MM/DD): ')
     data = datetime.date(*map(int, data_input.split('/')))
     horario_input = input('Digite o horario da sessão na formatação (HH:MM): ')
     horario = datetime.time(*map(int, horario_input.split(':')))
-    if codigo not in SESSOES and codigo_filme in FILMES and codigo_sala in SALAS:
-        SESSOES[codigo] = {}
-        SESSOES[codigo]['Codigo'] = codigo
+    if codigo_sessao not in SESSOES and codigo_filme in FILMES and codigo_sala in SALAS:
+        SESSOES[codigo_sessao] = {}
+        SESSOES[codigo_sessao]['Codigo'] = codigo_sessao
         tupla=(FILMES[codigo_filme]['Codigo'], SALAS[codigo_sala]['Codigo'],data,horario)
-        SESSOES[codigo]['Chave']= tupla
+        SESSOES[codigo_sessao]['Chave']= tupla
         return True    
     else:
         return False
@@ -135,6 +135,7 @@ def add_codigo_salas(SALAS):
     codigo = input("Digite o código da sala: ")
     if codigo not in SALAS:
         SALAS[codigo]={}
+        SALAS[codigo]['Codigo']=codigo
     else:
         print("O código já existe.")
     return codigo
@@ -354,7 +355,8 @@ def remove_filme(FILMES, codigo):
 def add_codigo_filmes(FILMES):
     codigo = input("Digite o código do filme: ")
     if codigo not in FILMES:
-        FILMES[codigo]={}           
+        FILMES[codigo]={}
+        FILMES[codigo]['Codigo']=codigo           
     else:
         print("O código já existe.")
     return codigo
@@ -525,8 +527,8 @@ def main(): #programa principal
                     if bool == False:
                         print('Não foi possivel encontra a sessão desejada.')
                 elif opsessoes == 3:
-                    codigo=input('Entre com o codigo da sessão: ')
-                    bool = GerarSessão(FILMES,SALAS,SESSOES,codigo)
+                    codigo_sessao=input('Entre com o codigo da sessão: ')
+                    bool = GerarSessão(FILMES,SALAS,SESSOES,codigo_sessao)
                     if bool == True:
                         print('Sessão adicionada com sucesso!')
                     else:
