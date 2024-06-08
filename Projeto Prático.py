@@ -56,8 +56,9 @@ def listar_dados_sessões_data(SESSOES, FILMES, SALAS, data_inicio, data_fim):
             if data_inicio_dt <= data_sessao_obj <= data_fim:
                 codigo_filme = SESSOES[codigo]['Chave'][0]
                 codigo_sala = SESSOES[codigo]['Chave'][1]
+                horario=SESSOES[codigo]['Chave'][3]
                 arq.write(f"Data da sessão: {data_sessao_obj.strftime('%Y-%m-%d')}\n")
-                arq.write(f"Horário da sessão: {SESSOES[codigo]['Chave'][3]}\n")
+                arq.write(f"Horário da sessão: {horario.strftime('%H:%M')}\n")
                 arq.write(f"Preço da sessão: {SESSOES[codigo]['Preço']}\n")
                 arq.write(f"Código do filme: {FILMES[codigo_filme]['Codigo']}\n")
                 arq.write(f"Nome do filme: {FILMES[codigo_filme]['Nome']}\n")
@@ -97,6 +98,7 @@ def GerarSessão(FILMES,SALAS,SESSOES,codigo):
     horario = datetime.time(*map(int, horario_input.split(':')))
     if codigo not in SESSOES and codigo_filme in FILMES and codigo_sala in SALAS:
         SESSOES[codigo] = {}
+        SESSOES[codigo]['Codigo'] = codigo
         tupla=(FILMES[codigo_filme]['Codigo'], SALAS[codigo_sala]['Codigo'],data,horario)
         SESSOES[codigo]['Chave']= tupla
         return True    
@@ -322,7 +324,7 @@ def listar_elementos_especifico_sessões(SESSOES,codigo):
 def listar_sessoes(Sessões):
     print('Lista de sessões no sistema: ')
     for codigo in Sessões.keys():
-        print(Sessões[codigo]) 
+        print(f'{Sessões[codigo]['Codigo']}: {Sessões[codigo]['Preço']}') 
 ###### SUBMENU DE SALAS #######
 def submenu_salas():
     print("\nSubmenu SALAS:")
