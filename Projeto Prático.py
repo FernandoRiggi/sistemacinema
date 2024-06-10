@@ -1,11 +1,20 @@
 import datetime
+def gerar_tupla(FILMES, SALAS):
+    filme=input('Digite o código do filme: ').upper()
+    sala=input("Digite o código da sala: ").upper()
+    data_input = input('Entre com a data da sessão na formatação (AAAA/MM/DD): ')
+    data = datetime.date(*map(int, data_input.split('/')))
+    horario_input = input('Digite o horario da sessão na formatação (HH:MM): ')
+    horario = datetime.time(*map(int, horario_input.split(':')))
+    tupla=(FILMES[filme]['Codigo'], SALAS[sala]['Codigo'],data,horario)
+    return tupla
 ####gravar_sessoes####
 def gravar_sessoes(SESSOES):
     arq=open('./sessoes.txt', 'w')
     if Existe_Arquivo('./sessoes.txt'):
         for codigo in SESSOES:
             frase=''
-            frase=codigo+';'+SESSOES[codigo]['Chave'][0]+';'+SESSOES[codigo]['Chave'][1]+';'+str(SESSOES[codigo]['Chave'][2])+';'+str(SESSOES[codigo]['Chave'][3])+';'+str(SESSOES[codigo]['Preço'])
+            frase=codigo[0]+';'+codigo[1]+';'+str(codigo[2])+';'+str(codigo[3])+';'+str(SESSOES[codigo]['Preço'])
             frase+='\n'
             arq.write(frase)
     else:
@@ -16,18 +25,15 @@ def ler_sessoes(SESSOES):
         with open('sessoes.txt') as file:
             for linha in file:
                 linha = linha.split(';')
-                codigo=linha[0]
-                SESSOES[codigo]={}
-                SESSOES[codigo]['Codigo']=codigo
-                codigo_filme=linha[1]
-                codigo_sala=linha[2]
-                datastr=linha[3]
+                codigo_filme=linha[0]
+                codigo_sala=linha[1]
+                datastr=linha[2]
                 data_obj=datetime.datetime.strptime(datastr, "%Y-%m-%d")
-                horariostr=linha[4]
+                horariostr=linha[3]
                 horario_obj = datetime.datetime.strptime(horariostr, "%H:%M:%S")
                 tupla=(codigo_filme,codigo_sala,data_obj,horario_obj)
-                SESSOES[codigo]['Chave']=tupla
-                SESSOES[codigo]['Preço']=float(linha[5])
+                SESSOES[tupla]={}
+                SESSOES[tupla]['Preço']=float(linha[4])
             return SESSOES
     else:
         return False 
@@ -45,7 +51,7 @@ def listar_dados_sessões_data(SESSOES, FILMES, SALAS, data_inicio, data_fim):
         # Converter data_inicio para datetime.datetime
         data_inicio_dt = datetime.datetime.combine(data_inicio, datetime.datetime.min.time())
         for codigo in SESSOES:
-            data_sessao_str = SESSOES[codigo]['Chave'][2]
+            data_sessao_str = SESSOES[codigo][1]
             if isinstance(data_sessao_str, datetime.date):
                 data_sessao_obj = data_sessao_str
             else:
@@ -54,9 +60,9 @@ def listar_dados_sessões_data(SESSOES, FILMES, SALAS, data_inicio, data_fim):
             if isinstance(data_sessao_obj, datetime.date):
                 data_sessao_obj = datetime.datetime.combine(data_sessao_obj, datetime.datetime.min.time())
             if data_inicio_dt <= data_sessao_obj <= data_fim:
-                codigo_filme = SESSOES[codigo]['Chave'][0]
-                codigo_sala = SESSOES[codigo]['Chave'][1]
-                horario=SESSOES[codigo]['Chave'][3]
+                codigo_filme = codigo[0]
+                codigo_sala = codigo[1]
+                horario=codigo[3]
                 arq.write(f"Data da sessão: {data_sessao_obj.strftime('%Y-%m-%d')}\n")
                 arq.write(f"Horário da sessão: {horario.strftime('%H:%M')}\n")
                 arq.write(f"Preço da sessão: {SESSOES[codigo]['Preço']}\n")
@@ -67,10 +73,10 @@ def listar_dados_sessões_data(SESSOES, FILMES, SALAS, data_inicio, data_fim):
                 arq.write(f"Nome da sala: {SALAS[codigo_sala]['Nome']}\n")
                 arq.write('\n')
 ####ADD_PREÇO####
-def add_preço(SESSOES,codigo):
+def add_preço(SESSOES,tupla):
     preco = float(input('Entre com o preço da sessão: '))
     if codigo in SESSOES:
-        SESSOES[codigo]['Preço']=preco
+        SESSOES[tupla]['Preço']=preco
         return True
     else:
         return False
@@ -88,20 +94,20 @@ def excluir_sessão(SESSOES,codigo):
     else:
         print("Código de confirmação incorreto, retornando ao submenu SESSÕES")
         return False
-####FUNÇÃO PARA CRIAR TUPLA####
-def GerarSessão(FILMES,SALAS,SESSOES,codigo_sessao):
+####FUNÇÃO GERAR SESSÃO####
+def GerarSessão(FILMES,SALAS,SESSOES):
     codigo_filme=input("Digite o código do Filme: ")
+    codigo_filme=codigo_filme.upper()
     codigo_sala=input("Digite o código da Sala: ")
+    codigo_sala=codigo_sala.upper()
     data_input = input('Entre com a data da sessão na formatação (AAAA/MM/DD): ')
     data = datetime.date(*map(int, data_input.split('/')))
     horario_input = input('Digite o horario da sessão na formatação (HH:MM): ')
     horario = datetime.time(*map(int, horario_input.split(':')))
-    if codigo_sessao not in SESSOES and codigo_filme in FILMES and codigo_sala in SALAS:
-        SESSOES[codigo_sessao] = {}
-        SESSOES[codigo_sessao]['Codigo'] = codigo_sessao
+    if codigo_filme in FILMES and codigo_sala in SALAS:
         tupla=(FILMES[codigo_filme]['Codigo'], SALAS[codigo_sala]['Codigo'],data,horario)
-        SESSOES[codigo_sessao]['Chave']= tupla
-        return True    
+        SESSOES[tupla]={}
+        return True and tupla    
     else:
         return False
 ####FUNÇÃO LISTAR DADOS DE SALA A PARTIR DE X E Y####
@@ -120,6 +126,7 @@ def listar_salas_cap_exib(SALAS,tipo_de_exibicao,capacidade):
 def remove_sala(SALAS, codigo):
     print("Deseja confirmar a remoção da sala?")
     confirmacao = input("Para confirmar digite o codigo do sala: ")
+    confirmacao=confirmacao.upper()
     if confirmacao == codigo:
         if confirmacao in SALAS:
             del SALAS[codigo]
@@ -133,6 +140,7 @@ def remove_sala(SALAS, codigo):
 ####FUNÇÃO PARA ADD O CODIGO DA SALA####
 def add_codigo_salas(SALAS):
     codigo = input("Digite o código da sala: ")
+    codigo=codigo.upper()
     if codigo not in SALAS:
         SALAS[codigo]={}
         SALAS[codigo]['Codigo']=codigo
@@ -141,55 +149,62 @@ def add_codigo_salas(SALAS):
     return codigo
 ####FUNÇÃO PARA INCLUIR ELEMENTO EM SALAS####
 def incluir_elementos_sala(SALAS, codigo): 
-    print("Escolha os elementos que deseja adicionar")
-    print("1. Nome da Sala")
-    print("2. Capacidade da Sala")
-    print("3. Tipo de Exibição da Sala")
-    print("4. Acessível")
-    print("5. Sair")
-    op=int(input("Escolha a opção que deseja realizar: "))
-    if op ==1:
-        nome = input("Digite o nome da sala: ")
-        SALAS[codigo]["Nome"]=nome
-    elif op ==2:
-        capacidade=input("Digite a capacidade da sala: ")
-        SALAS[codigo]["Capacidade"]=capacidade
-    elif op==3:
-        exibicao=input("Digite o tipo de exibição da sala: ")
-        SALAS[codigo]["Exibicao"]=exibicao
-    elif op==4:
-        acessivel=input("Digite se a sala está acessível: ")
-        SALAS[codigo]["Acessivel"]=acessivel
-    elif op==5:
-        print("Saindo do menu de inclusão de elementos.")
-    else:
-        print("Operação inválida, escolha uma opção entre 1 e 5.")
-    return op
+    Submenu = True
+    while Submenu:
+        print("Escolha os elementos que deseja adicionar")
+        print("1. Nome da Sala")
+        print("2. Capacidade da Sala")
+        print("3. Tipo de Exibição da Sala")
+        print("4. Acessível")
+        print("5. Sair")
+        op=int(input("Escolha a opção que deseja realizar: "))
+        if op ==1:
+            nome = input("Digite o nome da sala: ")
+            SALAS[codigo]["Nome"]=nome
+        elif op ==2:
+            capacidade=input("Digite a capacidade da sala: ")
+            SALAS[codigo]["Capacidade"]=capacidade
+        elif op==3:
+            exibicao=input("Digite o tipo de exibição da sala: ")
+            SALAS[codigo]["Exibicao"]=exibicao
+        elif op==4:
+            acessivel=input("Digite se a sala está acessível: ")
+            SALAS[codigo]["Acessivel"]=acessivel
+        elif op==5:
+            print("Saindo do menu de inclusão de elementos.")
+            Submenu = False
+        else:
+            print("Operação inválida, escolha uma opção entre 1 e 5.")
+        return op
 ####FUNÇÃO PARA LISTAR ELEMENTO ESPECIFICO SALAS####
 def listar_elemento_especifico_salas(SALAS, codigo):
-    print("Escolha o elemento que deseja visualizar")
-    print("   1. Nome da Sala")
-    print("   2. Capacidade da Sala")
-    print("   3. Tipo de Exibição")
-    print("   4. Acessível")
-    print("   5. Sair")
-    op = int(input("Escolha a opção que deseja realizar: "))
-    if op == 1:
-        print(f"Nome: {SALAS[codigo]['Nome']}")
-    elif op == 2:
-        print(f"Capacidade: {SALAS[codigo]['Capacidade']}")
-    elif op == 3:
-        print(f"Tipo de Exibição: {SALAS[codigo]['Exibicao']}")
-    elif op == 4:
-        print(f"Acessibilidade: {SALAS[codigo]['Acessivel']}")
-    elif op == 5:
-        print("Saindo do menu de listagem de elementos.")
-    else:
-        print("Operação inválida, escolha uma opção entre 1 e 5.")
+    Submenu = True
+    while Submenu:
+        print("Escolha o elemento que deseja visualizar")
+        print("   1. Nome da Sala")
+        print("   2. Capacidade da Sala")
+        print("   3. Tipo de Exibição")
+        print("   4. Acessível")
+        print("   5. Sair")
+        op = int(input("Escolha a opção que deseja realizar: "))
+        if op == 1:
+            print(f"Nome: {SALAS[codigo]['Nome']}")
+        elif op == 2:
+            print(f"Capacidade: {SALAS[codigo]['Capacidade']}")
+        elif op == 3:
+            print(f"Tipo de Exibição: {SALAS[codigo]['Exibicao']}")
+        elif op == 4:
+            print(f"Acessibilidade: {SALAS[codigo]['Acessivel']}")
+        elif op == 5:
+            print("Saindo do menu de listagem de elementos.")
+            Submenu = False
+        else:
+            print("Operação inválida, escolha uma opção entre 1 e 5.")
 ####FUNÇÃO PARA LISTAR SALAS####
 def listar_salas(SALAS):
     print("Lista de salas no sistema:")
     for codigo in SALAS:
+        print('\n')
         print(SALAS[codigo]['Nome'])
 ####FUNÇÃO PARA GRAVAR SALAS EM ARQUIVOS####
 def gravar_sala(SALAS):
@@ -261,7 +276,6 @@ def listar_filmes_data(FILMES, data_filme):
     with open('./relatórios2.txt', 'w') as arq:
         arq.write('**************************Relatório de Filmes**************************\n\n')
         arq.write(f"Filmes lançados a partir de {data_filme}:\n\n")
-        
         for codigo, filme in FILMES.items():
             if int(filme['Ano']) >= data_filme:
                 arq.write(f"Código: {codigo}\n")
@@ -291,33 +305,18 @@ def submenu_sessoes():
     op=int(input("Escolha a opção que deseja realizar: "))
     return op
 #######LISTAR ELEMENTOS DO DIC DE SESSOES#########
-def listar_elementos_especifico_sessões(SESSOES,codigo):
-    if codigo in SESSOES:
-        SubMenu = True
-        while SubMenu:
-            print('Escolha o elemento que deseja visualizar:')
-            print(' 1. Código do Filme')
-            print(' 2. Código da Sala')
-            print(' 3. Data')
-            print(' 4. Horário')
-            print(' 5. Valor')
-            print(' 6. Sair')
-            op = int(input('Escolha a opção que deseja visualizar: '))
-            if op == 1:
-                print(f'Código do Filme: {SESSOES[codigo]['Chave'][0]}')
-            elif op == 2:
-                print(f'Código da Sala: {SESSOES[codigo]['Chave'][1]}')
-            elif op == 3:
-                print(f'Data: {SESSOES[codigo]['Chave'][2]}')
-            elif op == 4:
-                print(f'Horário: {SESSOES[codigo]['Chave'][3]}')
-            elif op == 5:
-                print(f'Valor: {SESSOES[codigo]['Preço']}')
-            elif op == 6:
-                print('Saindo do Menu de listagem de elementos...')
-                SubMenu = False
-            else:
-                print('Valor inválido, escolha uma opção de 1 a 6')
+def listar_elementos_especifico_sessões(SESSOES,tupla):
+    if tupla in SESSOES:
+        print('Escolha o elemento que deseja visualizar:')
+        print(' 1. Valor')
+        print(' 2. Sair')
+        op = int(input('Escolha a opção que deseja visualizar: '))
+        if op == 1:
+            print(f'Preço da Sessão: {SESSOES[tupla]['Preço']}')
+        elif op == 2:
+            print('Saindo do Menu de listagem de elementos...')
+        else:
+            print('Valor inválido, escolha uma opção de 1 a 2')
         return True
     else:
         return False
@@ -325,7 +324,8 @@ def listar_elementos_especifico_sessões(SESSOES,codigo):
 def listar_sessoes(Sessões):
     print('Lista de sessões no sistema: ')
     for codigo in Sessões.keys():
-        print(f'{Sessões[codigo]['Codigo']}: {Sessões[codigo]['Preço']}') 
+        print('\n')
+        print(f'{Sessões[codigo]['Preço']}') 
 ###### SUBMENU DE SALAS #######
 def submenu_salas():
     print("\nSubmenu SALAS:")
@@ -340,7 +340,7 @@ def submenu_salas():
 ######FUNÇÃO PARA REMOVER O FILME #############
 def remove_filme(FILMES, codigo):
     print("Deseja confirmar a remoção do filme?")
-    confirmacao = input("Para confirmar digite o codigo do filme: ")
+    confirmacao = input("Para confirmar digite o codigo do filme: ").upper()
     if confirmacao == codigo:
         if confirmacao in FILMES:
             del FILMES[codigo]
@@ -353,7 +353,7 @@ def remove_filme(FILMES, codigo):
         return False
 ######### FUNÇÃO PARA ADICIONAR O CODIGO DO FILME ########
 def add_codigo_filmes(FILMES):
-    codigo = input("Digite o código do filme: ")
+    codigo = input("Digite o código do filme: ").upper()
     if codigo not in FILMES:
         FILMES[codigo]={}
         FILMES[codigo]['Codigo']=codigo           
@@ -367,51 +367,57 @@ def listar_filmes(FILMES):
         print(FILMES[codigo]['Nome'])
 ######## MENU PARA ADICIONAR ELEMENTOS EM UM FILME#######
 def incluir_elementos_filme(FILMES, codigo): #submenu para adicionar elementos no filme
-    print("Escolha os elementos que deseja adicionar")
-    print("1. Nome do Filme")
-    print("2. Ano de lançamento do Filme")
-    print("3. Diretor do Filme")
-    print("4. Atores do Filme")
-    print("5. Sair")
-    op=int(input("Escolha a opção que deseja realizar: "))
-    if op ==1:
-        nome = input("Digite o nome do filme: ")
-        FILMES[codigo]["Nome"]=nome
-    elif op ==2:
-        ano=input("Digite o ano de lançamento do filme: ")
-        FILMES[codigo]["Ano"]=ano
-    elif op==3:
-        diretor=input("Digite o nome do diretor: ")
-        FILMES[codigo]["Diretor"]=diretor
-    elif op==4:
-        atores=input("Digite os atores, (para separar utilize vírgula): ")
-        FILMES[codigo]["Atores"]=atores.split(",")
-    elif op==5:
-        print("Saindo do menu de inclusão de elementos.")
-    else:
-        print("Operação inválida, escolha uma opção entre 1 e 5.")
-    return op
+    Submenu = True
+    while Submenu:
+        print("Escolha os elementos que deseja adicionar")
+        print("1. Nome do Filme")
+        print("2. Ano de lançamento do Filme")
+        print("3. Diretor do Filme")
+        print("4. Atores do Filme")
+        print("5. Sair")
+        op=int(input("Escolha a opção que deseja realizar: "))
+        if op ==1:
+            nome = input("Digite o nome do filme: ")
+            FILMES[codigo]["Nome"]=nome
+        elif op ==2:
+            ano=input("Digite o ano de lançamento do filme: ")
+            FILMES[codigo]["Ano"]=ano
+        elif op==3:
+            diretor=input("Digite o nome do diretor: ")
+            FILMES[codigo]["Diretor"]=diretor
+        elif op==4:
+            atores=input("Digite os atores, (para separar utilize vírgula): ")
+            FILMES[codigo]["Atores"]=atores.split(",")
+        elif op==5:
+            print("Saindo do menu de inclusão de elementos.")
+            Submenu = False
+        else:
+            print("Operação inválida, escolha uma opção entre 1 e 5.")
+        return op
 ######## MENU PARA LISTAR ELEMENTOS EM UM FILME########
 def listar_elemento_especifico_filme(FILMES, codigo):
-    print("Escolha o elemento que deseja visualizar:")
-    print("   1. Nome do Filme")
-    print("   2. Ano de lançamento do Filme")
-    print("   3. Diretor do Filme")
-    print("   4. Atores do Filme")
-    print("   5. Sair")
-    op = int(input("Escolha a opção que deseja realizar: "))
-    if op == 1:
-        print(f"Nome: {FILMES[codigo]['Nome']}")
-    elif op == 2:
-        print(f"Ano: {FILMES[codigo]['Ano']}")
-    elif op == 3:
-        print(f"Diretor: {FILMES[codigo]['Diretor']}")
-    elif op == 4:
-        print(f"Atores: {', '.join(FILMES[codigo]['Atores'])}")
-    elif op == 5:
-        print("Saindo do menu de listagem de elementos.")
-    else:
-        print("Operação inválida, escolha uma opção entre 1 e 5.")
+    Submenu = True
+    while Submenu:
+        print("Escolha o elemento que deseja visualizar:")
+        print("   1. Nome do Filme")
+        print("   2. Ano de lançamento do Filme")
+        print("   3. Diretor do Filme")
+        print("   4. Atores do Filme")
+        print("   5. Sair")
+        op = int(input("Escolha a opção que deseja realizar: "))
+        if op == 1:
+            print(f"Nome: {FILMES[codigo]['Nome']}")
+        elif op == 2:
+            print(f"Ano: {FILMES[codigo]['Ano']}")
+        elif op == 3:
+            print(f"Diretor: {FILMES[codigo]['Diretor']}")
+        elif op == 4:
+            print(f"Atores: {', '.join(FILMES[codigo]['Atores'])}")
+        elif op == 5:
+            print("Saindo do menu de listagem de elementos.")
+            Submenu = False
+        else:
+            print("Operação inválida, escolha uma opção entre 1 e 5.")
 ####### SUBMENU DE FILMES #######
 def submenu_filmes(): #submenu de filmes
     print("\nSubmenu FILMES:")
@@ -451,7 +457,7 @@ def main(): #programa principal
                 if opsalas==1:
                     listar_salas(SALAS)
                 elif opsalas==2:
-                    codigo = input("Digite o código da sala para listar os detalhes: ")
+                    codigo = input("Digite o código da sala para listar os detalhes: ").upper()
                     ler_salas(SALAS)
                     listar_elemento_especifico_salas(SALAS, codigo)
                 elif opsalas==3:
@@ -460,7 +466,7 @@ def main(): #programa principal
                     while incluir_elementos_sala_op!=5:
                         incluir_elementos_sala_op=incluir_elementos_sala(SALAS, codigo)
                 elif opsalas==4:
-                    codigo=input("Digite o código da sala que deseja alterar: ")
+                    codigo=input("Digite o código da sala que deseja alterar: ").upper()
                     if codigo in SALAS:
                         incluir_elementos_sala_op=1
                         while incluir_elementos_sala_op!=5:
@@ -468,7 +474,7 @@ def main(): #programa principal
                     else:
                         print("Código não encontrado")
                 elif opsalas==5:
-                    codigo = input("Digite o código da sala que deseja remover: ")
+                    codigo = input("Digite o código da sala que deseja remover: ").upper()
                     remover=remove_sala(SALAS, codigo)
                     if remover == True:
                         print(f"A sala {codigo} foi removido")
@@ -486,16 +492,16 @@ def main(): #programa principal
                 if opfilmes == 1:
                     listar_filmes(FILMES)
                 elif opfilmes==2:
-                    codigo = input("Digite o código do filme para listar os detalhes: ")
+                    codigo = input("Digite o código do filme para listar os detalhes: ").upper()
                     ler_filmes(FILMES)
                     listar_elemento_especifico_filme(FILMES, codigo)
                 elif opfilmes==3:
-                    codigo = add_codigo_filmes(FILMES)
+                    codigo = add_codigo_filmes(FILMES).upper()
                     incluir_elementos_filme_op=1
                     while incluir_elementos_filme_op !=5:
                         incluir_elementos_filme_op = incluir_elementos_filme(FILMES, codigo)
                 elif opfilmes==4:
-                    codigo = input("Digite o código do filme que deseja alterar: ")
+                    codigo = input("Digite o código do filme que deseja alterar: ").upper()
                     if codigo in FILMES:
                         incluir_elementos_filme_op=1
                         while incluir_elementos_filme_op!=5:
@@ -503,7 +509,7 @@ def main(): #programa principal
                     else:
                         print("Código não encontrado.")
                 elif opfilmes==5:
-                    codigo = input("Digite o código do filme que deseja excluir: ")
+                    codigo = input("Digite o código do filme que deseja excluir: ").upper()
                     remover = remove_filme(FILMES, codigo)
                     if remover == True:
                         print(f"O filme {codigo} foi excluido")
@@ -521,26 +527,25 @@ def main(): #programa principal
                 if opsessoes == 1:
                     listar_sessoes(SESSOES)
                 elif opsessoes == 2:
-                    codigo = input('Entre com o código da sessão desejada: ')
+                    tupla= gerar_tupla(FILMES, SALAS)
                     print(f'Abrindo o SubMenu de Sessões: ')
-                    bool = listar_elementos_especifico_sessões(SESSOES,codigo)
+                    bool = listar_elementos_especifico_sessões(SESSOES,tupla)
                     if bool == False:
                         print('Não foi possivel encontra a sessão desejada.')
                 elif opsessoes == 3:
-                    codigo_sessao=input('Entre com o codigo da sessão: ')
-                    bool = GerarSessão(FILMES,SALAS,SESSOES,codigo_sessao)
-                    if bool == True:
+                    tupla = GerarSessão(FILMES,SALAS,SESSOES)
+                    if tupla == True:
                         print('Sessão adicionada com sucesso!')
+                        preco=add_preço(SESSOES,tupla)
+                        if preco==True:
+                            print('Preço adicionado')
+                        else:
+                            print('Não foi possível adicionar o preço')
                     else:
                         print('Não foi possivel gerar sessão!')
-                    preco=add_preço(SESSOES,codigo)
-                    if preco==True:
-                        print("Preço adicionado")
-                    else:
-                        print("Não foi possível adicionar o preço")
                 elif opsessoes == 4:
-                    codigo = input('Digite o codigo da sessão que deseja alterar: ')
-                    preco = add_preço(SESSOES,codigo)
+                    tupla = gerar_tupla(FILMES,SALAS)
+                    preco = add_preço(SESSOES,tupla)
                     if preco == True:
                         print('Preço alterado!')
                     else:
