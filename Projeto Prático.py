@@ -1,4 +1,5 @@
 import datetime
+######GERAR TUPLA#######
 def gerar_tupla(FILMES, SALAS):
     filme=input('Digite o código do filme: ').upper()
     sala=input("Digite o código da sala: ").upper()
