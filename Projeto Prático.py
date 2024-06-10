@@ -1,12 +1,10 @@
 import datetime
-######GERAR TUPLA#######
+####GERAR TUPLA####
 def gerar_tupla(FILMES, SALAS):
     filme=input('Digite o código do filme: ').upper()
     sala=input("Digite o código da sala: ").upper()
-    data_input = input('Entre com a data da sessão na formatação (AAAA/MM/DD): ')
-    data = datetime.date(*map(int, data_input.split('/')))
-    horario_input = input('Digite o horario da sessão na formatação (HH:MM): ')
-    horario = datetime.time(*map(int, horario_input.split(':')))
+    data = input('Entre com a data da sessão na formatação (AAAA-MM-DD): ')
+    horario = input('Digite o horario da sessão na formatação (HH:MM:SS): ')
     tupla=(FILMES[filme]['Codigo'], SALAS[sala]['Codigo'],data,horario)
     return tupla
 ####gravar_sessoes####
@@ -29,10 +27,8 @@ def ler_sessoes(SESSOES):
                 codigo_filme=linha[0]
                 codigo_sala=linha[1]
                 datastr=linha[2]
-                data_obj=datetime.datetime.strptime(datastr, "%Y-%m-%d")
                 horariostr=linha[3]
-                horario_obj = datetime.datetime.strptime(horariostr, "%H:%M:%S")
-                tupla=(codigo_filme,codigo_sala,data_obj,horario_obj)
+                tupla=(codigo_filme,codigo_sala,datastr,horariostr)
                 SESSOES[tupla]={}
                 SESSOES[tupla]['Preço']=float(linha[4])
             return SESSOES
@@ -52,7 +48,10 @@ def listar_dados_sessões_data(SESSOES, FILMES, SALAS, data_inicio, data_fim):
         # Converter data_inicio para datetime.datetime
         data_inicio_dt = datetime.datetime.combine(data_inicio, datetime.datetime.min.time())
         for codigo in SESSOES:
-            data_sessao_str = SESSOES[codigo][1]
+            data_sessao_str = codigo[2]
+            data_sessao_obj = datetime.date(*map(int, data_sessao_str.split('-')))
+            horario_sessao_str=codigo[3]
+            horario_sessao_obj = datetime.time(*map(int, horario_sessao_str.split(':')))
             if isinstance(data_sessao_str, datetime.date):
                 data_sessao_obj = data_sessao_str
             else:
@@ -63,9 +62,8 @@ def listar_dados_sessões_data(SESSOES, FILMES, SALAS, data_inicio, data_fim):
             if data_inicio_dt <= data_sessao_obj <= data_fim:
                 codigo_filme = codigo[0]
                 codigo_sala = codigo[1]
-                horario=codigo[3]
                 arq.write(f"Data da sessão: {data_sessao_obj.strftime('%Y-%m-%d')}\n")
-                arq.write(f"Horário da sessão: {horario.strftime('%H:%M')}\n")
+                arq.write(f"Horário da sessão: {horario_sessao_obj.strftime('%H:%M')}\n")
                 arq.write(f"Preço da sessão: {SESSOES[codigo]['Preço']}\n")
                 arq.write(f"Código do filme: {FILMES[codigo_filme]['Codigo']}\n")
                 arq.write(f"Nome do filme: {FILMES[codigo_filme]['Nome']}\n")
@@ -76,7 +74,7 @@ def listar_dados_sessões_data(SESSOES, FILMES, SALAS, data_inicio, data_fim):
 ####ADD_PREÇO####
 def add_preço(SESSOES,tupla):
     preco = float(input('Entre com o preço da sessão: '))
-    if codigo in SESSOES:
+    if tupla in SESSOES:
         SESSOES[tupla]['Preço']=preco
         return True
     else:
@@ -101,10 +99,10 @@ def GerarSessão(FILMES,SALAS,SESSOES):
     codigo_filme=codigo_filme.upper()
     codigo_sala=input("Digite o código da Sala: ")
     codigo_sala=codigo_sala.upper()
-    data_input = input('Entre com a data da sessão na formatação (AAAA/MM/DD): ')
-    data = datetime.date(*map(int, data_input.split('/')))
-    horario_input = input('Digite o horario da sessão na formatação (HH:MM): ')
-    horario = datetime.time(*map(int, horario_input.split(':')))
+    data = input('Entre com a data da sessão na formatação (AAAA-MM-DD): ')
+    #data = datetime.date(*map(int, data_input.split('/')))
+    horario = input('Digite o horario da sessão na formatação (HH:MM:SS): ')
+   # horario = datetime.time(*map(int, horario_input.split(':')))
     if codigo_filme in FILMES and codigo_sala in SALAS:
         tupla=(FILMES[codigo_filme]['Codigo'], SALAS[codigo_sala]['Codigo'],data,horario)
         SESSOES[tupla]={}
@@ -308,17 +306,17 @@ def submenu_sessoes():
 #######LISTAR ELEMENTOS DO DIC DE SESSOES#########
 def listar_elementos_especifico_sessões(SESSOES,tupla):
     if tupla in SESSOES:
-        print('Escolha o elemento que deseja visualizar:')
-        print(' 1. Valor')
-        print(' 2. Sair')
-        op = int(input('Escolha a opção que deseja visualizar: '))
-        if op == 1:
-            print(f'Preço da Sessão: {SESSOES[tupla]['Preço']}')
-        elif op == 2:
-            print('Saindo do Menu de listagem de elementos...')
-        else:
-            print('Valor inválido, escolha uma opção de 1 a 2')
-        return True
+                print('Escolha o elemento que deseja visualizar:')
+                print(' 1. Valor')
+                print(' 2. Sair')
+                op = int(input('Escolha a opção que deseja visualizar: '))
+                if op == 1:
+                    print(f'Preço da Sessão: {SESSOES[tupla]['Preço']}')
+                elif op == 2:
+                    print('Saindo do Menu de listagem de elementos...')
+                else:
+                    print('Valor inválido, escolha uma opção de 1 a 2')
+                return True
     else:
         return False
 #########LISTAR SESSOES###########
@@ -535,7 +533,7 @@ def main(): #programa principal
                         print('Não foi possivel encontra a sessão desejada.')
                 elif opsessoes == 3:
                     tupla = GerarSessão(FILMES,SALAS,SESSOES)
-                    if tupla == True:
+                    if tupla:
                         print('Sessão adicionada com sucesso!')
                         preco=add_preço(SESSOES,tupla)
                         if preco==True:
