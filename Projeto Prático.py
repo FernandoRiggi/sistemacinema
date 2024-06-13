@@ -19,7 +19,6 @@ def ler_salas(SALAS):
                 codigo = linha[0]
                 SALAS[codigo]={}
                 SALAS[codigo]['Codigo']=codigo
-                SALAS[codigo]['Codigo']=codigo
                 SALAS[codigo]['Nome']=linha[1]
                 capacidade = linha[2]
                 SALAS[codigo]['Capacidade']=int(capacidade)
@@ -96,7 +95,6 @@ def incluir_elementos_sala(SALAS, codigo):
             Submenu = False
         else:
             print("Operação inválida, escolha uma opção entre 1 e 5.")
-        return op
 ####FUNÇÃO PARA REMOVER SALA####
 def remove_sala(SALAS, codigo):
     print("Deseja confirmar a remoção da sala?")
@@ -216,7 +214,6 @@ def incluir_elementos_filme(FILMES, codigo): #submenu para adicionar elementos n
             Submenu = False
         else:
             print("Operação inválida, escolha uma opção entre 1 e 5.")
-        return op
 ######FUNÇÃO PARA REMOVER O FILME #############
 def remove_filme(FILMES, codigo):
     print("Deseja confirmar a remoção do filme?")
@@ -300,9 +297,7 @@ def GerarSessão(FILMES,SALAS,SESSOES):
     codigo_sala=input("Digite o código da Sala: ")
     codigo_sala=codigo_sala.upper()
     data = input('Entre com a data da sessão na formatação (AAAA-MM-DD): ')
-    #data = datetime.date(*map(int, data_input.split('/')))
     horario = input('Digite o horario da sessão na formatação (HH:MM:SS): ')
-   # horario = datetime.time(*map(int, horario_input.split(':')))
     if codigo_filme in FILMES and codigo_sala in SALAS:
         tupla=(FILMES[codigo_filme]['Codigo'], SALAS[codigo_sala]['Codigo'],data,horario)
         SESSOES[tupla]={}
@@ -315,8 +310,11 @@ def gerar_tupla(FILMES, SALAS):
     sala=input("Digite o código da sala: ").upper()
     data = input('Entre com a data da sessão na formatação (AAAA-MM-DD): ')
     horario = input('Digite o horario da sessão na formatação (HH:MM:SS): ')
-    tupla=(FILMES[filme]['Codigo'], SALAS[sala]['Codigo'],data,horario)
-    return tupla
+    if filme in FILMES and sala in SALAS:
+        tupla=(FILMES[filme]['Codigo'], SALAS[sala]['Codigo'],data,horario)
+        return tupla    
+    else: 
+        return False
 ####ADD_PREÇO####
 def add_preço(SESSOES,tupla):
     preco = float(input('Entre com o preço da sessão: '))
@@ -328,9 +326,9 @@ def add_preço(SESSOES,tupla):
 ######FUNÇÃO DEL SESSÃO#####
 def excluir_sessão(SESSOES,codigo):
     print("Deseja confirmar a remoção da sessão?")
-    confirmacao = input("Para confirmar digite o codigo da sessão: ")
-    if confirmacao == codigo:
-        if confirmacao in SESSOES:
+    confirmacao = input("Para confirmar digite o codigo da sessão: ").lower()
+    if confirmacao == 'sim':
+        if codigo in SESSOES:
             del SESSOES[codigo]
             return True
         else:
@@ -350,12 +348,6 @@ def gravar_sessoes(SESSOES):
             arq.write(frase)
     else:
         print("Não existe arquivo")
-####obter_data_rel_3####
-def obter_data():
-    while True:
-        data_str = input("Digite a data no formato AAAA-MM-DD: ")
-        data = datetime.datetime.strptime(data_str, "%Y-%m-%d")
-        return data
 ##### SUBMENU DE RELÁTORIOS ######
 def submenu_relatorios():
     print("\nSubmenu RELATÓRIOS:")
@@ -421,6 +413,12 @@ def listar_dados_sessões_data(SESSOES, FILMES, SALAS, data_inicio, data_fim):
                 arq.write(f"Código da sala: {SALAS[codigo_sala]['Codigo']}\n")
                 arq.write(f"Nome da sala: {SALAS[codigo_sala]['Nome']}\n")
                 arq.write('\n')
+####obter_data_rel_3####
+def obter_data():
+    while True:
+        data_str = input("Digite a data no formato AAAA-MM-DD: ")
+        data = datetime.datetime.strptime(data_str, "%Y-%m-%d")
+        return data
 ########FUNÇÃO PARA VER SE EXISTE ALGO NO ARQUIVO###########
 def Existe_Arquivo(nome):
     import os
@@ -449,7 +447,7 @@ def main(): #programa principal
     while Menu:
         operacao = menu() #chama o menu das opções principais
         if operacao == 1: #abrirá o submenu de Salas
-            opsalas = 1
+            print(f'Abrindo o SubMenu de Salas: ')
             Menu_salas = True
             while Menu_salas == True:
                 opsalas = submenu_salas() #chama o submenu de salas
@@ -457,26 +455,24 @@ def main(): #programa principal
                     listar_salas(SALAS)
                 elif opsalas==2:
                     codigo = input("Digite o código da sala para listar os detalhes: ").upper()
-                    ler_salas(SALAS)
-                    listar_elemento_especifico_salas(SALAS, codigo)
+                    if codigo in SALAS.keys():
+                        listar_elemento_especifico_salas(SALAS, codigo)
+                    else:
+                        print('A sala não foi encontrada.')
                 elif opsalas==3:
                     codigo = add_codigo_salas(SALAS)
-                    incluir_elementos_sala_op=1
-                    while incluir_elementos_sala_op!=5:
-                        incluir_elementos_sala_op=incluir_elementos_sala(SALAS, codigo)
+                    incluir_elementos_sala(SALAS, codigo)
                 elif opsalas==4:
-                    codigo=input("Digite o código da sala que deseja alterar: ").upper()
-                    if codigo in SALAS:
-                        incluir_elementos_sala_op=1
-                        while incluir_elementos_sala_op!=5:
-                            incluir_elementos_sala_op=incluir_elementos_sala(SALAS, codigo)
+                    codigo = input('Entre com o codigo da sala que deseja alterar: ')
+                    if codigo in SALAS.keys():
+                        incluir_elementos_sala(SALAS, codigo)
                     else:
-                        print("Código não encontrado")
+                        print('O codigo não foi encontrado.')
                 elif opsalas==5:
                     codigo = input("Digite o código da sala que deseja remover: ").upper()
                     remover=remove_sala(SALAS, codigo)
                     if remover == True:
-                        print(f"A sala {codigo} foi removido")
+                        print(f"A sala {codigo} foi removida")
                 elif opsalas ==6:
                     print("Encerrando submenu de salas")
                     gravar_sala(SALAS)
@@ -484,7 +480,7 @@ def main(): #programa principal
                 else:
                     print("Operação inválida, escolha uma opção entre 1 à 6.")
         elif operacao ==2: #abrirá o submenu de Filmes
-            opfilmes=1
+            print(f'Abrindo o SubMenu de Filmes: ')
             Menu_filmes = True
             while Menu_filmes == True:
                 opfilmes = submenu_filmes() #chama o submenu de filmes
@@ -492,21 +488,16 @@ def main(): #programa principal
                     listar_filmes(FILMES)
                 elif opfilmes==2:
                     codigo = input("Digite o código do filme para listar os detalhes: ").upper()
-                    ler_filmes(FILMES)
                     listar_elemento_especifico_filme(FILMES, codigo)
                 elif opfilmes==3:
                     codigo = add_codigo_filmes(FILMES).upper()
-                    incluir_elementos_filme_op=1
-                    while incluir_elementos_filme_op !=5:
-                        incluir_elementos_filme_op = incluir_elementos_filme(FILMES, codigo)
+                    incluir_elementos_filme(FILMES, codigo)
                 elif opfilmes==4:
                     codigo = input("Digite o código do filme que deseja alterar: ").upper()
-                    if codigo in FILMES:
-                        incluir_elementos_filme_op=1
-                        while incluir_elementos_filme_op!=5:
-                            incluir_elementos_filme_op=incluir_elementos_filme(FILMES, codigo)
+                    if codigo in FILMES.keys():
+                        incluir_elementos_filme(FILMES, codigo)
                     else:
-                        print("Código não encontrado.")
+                        print("Código não foi encontrado.")
                 elif opfilmes==5:
                     codigo = input("Digite o código do filme que deseja excluir: ").upper()
                     remover = remove_filme(FILMES, codigo)
@@ -519,7 +510,7 @@ def main(): #programa principal
                 else:
                     print("Operação inválida, escolha uma opção entre 1 à 6.")
         elif operacao ==3: #abrirá o submenu de Sessões
-            opsessoes = 1
+            print(f'Abrindo o SubMenu de Sessões: ')
             Menu_sessoes = True
             while Menu_sessoes ==True:
                 opsessoes = submenu_sessoes() #chama o submenu de sessoes
@@ -527,19 +518,21 @@ def main(): #programa principal
                     listar_sessoes(SESSOES)
                 elif opsessoes == 2:
                     tupla= gerar_tupla(FILMES, SALAS)
-                    print(f'Abrindo o SubMenu de Sessões: ')
-                    bool = listar_elementos_especifico_sessões(SESSOES,tupla)
-                    if bool == False:
-                        print('Não foi possivel encontra a sessão desejada.')
+                    if tupla == False:
+                        print('Não foi possivel criar a tupla.')
+                    else:
+                        bool = listar_elementos_especifico_sessões(SESSOES,tupla)
+                        if bool == False:
+                            print('Não foi possivel encontrar a sessão desejada.')
                 elif opsessoes == 3:
                     tupla = GerarSessão(FILMES,SALAS,SESSOES)
                     if tupla:
                         print('Sessão adicionada com sucesso!')
                         preco=add_preço(SESSOES,tupla)
-                        if preco==True:
-                            print('Preço adicionado')
+                        if preco:
+                            print('Preço adicionado com sucesso!')
                         else:
-                            print('Não foi possível adicionar o preço')
+                            print('Não foi possível adicionar o preço.')
                     else:
                         print('Não foi possivel gerar sessão!')
                 elif opsessoes == 4:
@@ -550,7 +543,7 @@ def main(): #programa principal
                     else:
                         print('Não foi possivel alterar o preço!')
                 elif opsessoes == 5:
-                    codigo = input('Entre com o codigo da sessão que deseja excluir: ')
+                    codigo = gerar_tupla(FILMES, SALAS)
                     remover = excluir_sessão(SESSOES,codigo)
                     if remover == True:
                         print(f'A sessão {codigo} foi excluida!')
@@ -558,10 +551,12 @@ def main(): #programa principal
                     print("Encerrando submenu de sessões.")
                     Menu_sessoes=False
                     gravar_sessoes(SESSOES)
+                else:
+                    print('Operação inválida, escolha uma opção entre 1 à 6.')
         elif operacao == 4: #abrirá o submenu de Relátorios
-            oprelatorios = 1
+            print(f'Abrindo o SubMenu de Relátorios: ')
             Menu_relatorios = True
-            while Menu_relatorios==True:
+            while Menu_relatorios:
                 oprelatorios = submenu_relatorios()
                 if oprelatorios==1:
                     tipo_de_exibicao=input("Digite o tipo de exibição que deseja ver as informações da sala: ")
@@ -579,7 +574,7 @@ def main(): #programa principal
                     print("Encerrando submenu de relátorios")
                     Menu_relatorios=False
         elif operacao==5: #encerrará o programa
-            print("Encerrando programa")
+            print("Encerrando programa...")
             Menu = False
         else: #caso digitado um número que não corresponde as operações válidas
             print("Operação inválida, escolha uma opção entre 1 à 5.")
